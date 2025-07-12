@@ -6,7 +6,12 @@ const app = express();
 const apiRoutes = require('./src/routes/api');
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ==== View engine setup ====
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+
+// ==== Middleware ====
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -25,64 +30,67 @@ function requireLogin(req, res, next) {
   if (req.session.loggedIn) {
     next();
   } else {
-    res.redirect('/');
+    res.redirect('/login?redirected=true');
   }
 }
 
-// ========== ROUTES ==========
+// ==== ROUTES ====
 
-// Landing page (shown if not logged in)
+// Landing page
 app.get('/', (req, res) => {
   if (req.session.loggedIn) {
     res.redirect('/home');
   } else {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    res.render('index'); // views/index.ejs
   }
 });
 
-// Login simulation 
+// Login page
+app.get('/login', (req, res) => {
+  res.render('login'); // views/login.ejs
+});
+
+// Create Account
+app.get('/create-account', (req, res) => {
+  res.render('create-account'); // views/create-account.ejs
+});
+
+// Home (dashboard)
+app.get('/home', requireLogin, (req, res) => {
+  res.render('home'); // views/home.ejs
+});
+
+// Other views (protected)
+app.get('/progress', requireLogin, (req, res) => {
+  res.render('progress');
+});
+
+app.get('/insights', requireLogin, (req, res) => {
+  res.render('insights');
+});
+
+app.get('/wellness-tips', requireLogin, (req, res) => {
+  res.render('wellness-tips');
+});
+
+app.get('/ai-checkup', requireLogin, (req, res) => {
+  res.render('ai-checkup');
+});
+
+// Login handler
 app.post('/login', (req, res) => {
-  // Here you would check credentials. For now, assume always successful.
+  // Normally you would check credentials.
   req.session.loggedIn = true;
   res.redirect('/home');
 });
 
-// Logout
+// Logout handler
 app.post('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/');
   });
 });
 
-// Home dashboard (requires login)
-app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'home.html'));
-});
-
-// Other component routes (also protected)
-app.get('/progress', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'components', 'progress.html'));
-});
-
-app.get('/insights', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'components', 'insights.html'));
-});
-
-app.get('/wellness-tips', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'components', 'wellness-tips.html'));
-});
-
-app.get('/ai-checkup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'components', 'ai-checkup.html'));
-});
-
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'login.html'));
-});
-
-app.get('/create-account', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'create-account.html'));
-});
 
 // API Routes (e.g., /api/...)
 app.use('/api', apiRoutes);
