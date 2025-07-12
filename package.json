@@ -11,6 +11,7 @@
   "author": "Gia",
   "license": "MIT",
   "dependencies": {
+    "bootstrap": "^5.3.7",
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
   }
