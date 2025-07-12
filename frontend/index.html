@@ -36,19 +36,26 @@
           <li class="nav-item">
             <a class="nav-link" href="ai-checkup">AI Checkup</a>
           </li>
-          <li class="nav-item">
-            <button
-              class="btn btn-sm btn-outline-secondary ms-2"
-              id="modeToggle"
-            >
-              Toggle Theme
-            </button>
-          </li>
+          <ul class="navbar-nav ms-3">
+            <li class="nav-item">
+              <a class="btn btn-outline-primary me-2" href="/login">Log In</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-primary" href="/create-account">Create Account</a>
+            </li>
+            <li class="nav-item">
+              <button
+                class="btn btn-sm btn-outline-secondary ms-2"
+                id="modeToggle"
+              >
+                Toggle Theme
+              </button>
+            </li>
         </ul>
       </div>
     </nav>
 
-    <section id="home" class="text-center py-5">
+    <section class="text-center py-5">
       <div class="container">
         <h1 class="display-4 fw-bold">Gentle Scheduling That Respects You</h1>
         <p class="lead">
@@ -130,6 +137,41 @@
         <a href="#" class="btn btn-outline-primary mt-3"
           >Talk to the AI Assistant</a
         >
+      </div>
+    </section>
+
+    <section id="login" class="py-5 bg-light">
+      <div class="container text-center">
+        <h2 class="fw-bold mb-3">Log In to Your Dashboard</h2>
+        <p class="mb-4">
+          Log in to see your personalized home view and scheduling assistant.
+        </p>
+        <form
+          action="/login"
+          method="POST"
+          class="mx-auto"
+          style="max-width: 400px"
+        >
+          <div class="mb-3">
+            <input
+              type="text"
+              name="username"
+              class="form-control"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Log In</button>
+        </form>
       </div>
     </section>
 
