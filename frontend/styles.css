@@ -8,3 +8,7 @@
   --bs-body-color: #eee;
   --bs-primary: #f4c2c2;
 }
+
+#ai-response {
+  white-space: pre-wrap;
+}

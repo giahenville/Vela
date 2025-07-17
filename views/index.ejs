@@ -1,0 +1,115 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Gentle Scheduling That Respects You</h1>
+    <p class="lead">
+      Vela helps you manage time with kindness. Built for
+      people with ADHD, OCD, anxiety, and burnout — this assistant supports
+      your focus, pace, and mental well-being.
+    </p>
+    <a href="#checkup" class="btn btn-primary btn-lg mt-3">Start with a Checkup</a>
+  </div>
+</section>
+
+<section id="accomplishments" class="py-5 bg-light">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Your Achievements</h2>
+    <p>
+      Celebrate your completed tasks weekly, monthly, and yearly — because
+      every step matters.
+    </p>
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <h3 class="display-6">12</h3>
+        <p>Tasks this week</p>
+      </div>
+      <div class="col-md-4">
+        <h3 class="display-6">42</h3>
+        <p>Tasks this month</p>
+      </div>
+      <div class="col-md-4">
+        <h3 class="display-6">310</h3>
+        <p>Tasks this year</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="analytics" class="py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Insightful Visuals</h2>
+    <p>
+      Track your energy trends, focus hours, and habits with gentle graphs
+      that help—not judge.
+    </p>
+    <div class="mt-4">
+      <img
+        src="https://via.placeholder.com/600x300?text=Graph+Visualization"
+        class="img-fluid rounded"
+        alt="Analytics Graph"
+      />
+    </div>
+  </div>
+</section>
+
+<section id="tips" class="py-5 bg-light">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Gentle Guidance</h2>
+    <p>
+      From focus hacks to rest reminders, MindfulSchedule offers kind,
+      science-based suggestions to help you balance productivity and peace.
+    </p>
+    <ul class="list-unstyled mt-4">
+      <li>🧘‍♀️ Take 3-minute breaks between long tasks</li>
+      <li>💤 Rest when your energy dips — it's not lazy, it's smart</li>
+      <li>🎯 Focus on one gentle goal per day</li>
+      <li>❤️ It's okay to slow down — healing is progress too</li>
+    </ul>
+  </div>
+</section>
+
+<section id="checkup" class="py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">How Are You Feeling?</h2>
+    <p>
+      Talk to your AI assistant about how you’re doing. Based on your
+      emotions and cognitive energy, the app gently updates your schedule to
+      suit you better.
+    </p>
+    <a href="#" class="btn btn-outline-primary mt-3">Talk to the AI Assistant</a>
+  </div>
+</section>
+
+<section id="login" class="py-5 bg-light">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Log In to Your Dashboard</h2>
+    <p class="mb-4">
+      Log in to see your personalized home view and scheduling assistant.
+    </p>
+    <form action="/login" method="POST" class="mx-auto" style="max-width: 400px">
+      <div class="mb-3">
+        <input
+          type="text"
+          name="username"
+          class="form-control"
+          placeholder="Enter your username"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          name="password"
+          class="form-control"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

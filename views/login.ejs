@@ -1,0 +1,45 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="container py-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Welcome Back to Vela</h2>
+    <p>Log in to your gentle scheduling dashboard</p>
+  </div>
+  <form
+    action="/login"
+    method="POST"
+    class="mx-auto bg-light p-4 rounded shadow-sm"
+    style="max-width: 400px"
+  >
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        name="username"
+        id="username"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        id="password"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Log In</button>
+    <div class="text-center mt-3">
+      <small>
+        Don’t have an account?
+        <a href="/create-account">Create one</a>
+      </small>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>
