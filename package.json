@@ -11,6 +11,7 @@
   "author": "Gia",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.7",
     "dotenv": "^17.2.0",
     "ejs": "^3.1.10",

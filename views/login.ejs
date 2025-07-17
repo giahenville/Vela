@@ -7,18 +7,18 @@
     <p>Log in to your gentle scheduling dashboard</p>
   </div>
   <form
-    action="/login"
+    action="/api/users/login"
     method="POST"
     class="mx-auto bg-light p-4 rounded shadow-sm"
     style="max-width: 400px"
   >
     <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
+      <label for="email" class="form-label">Email</label>
       <input
-        type="text"
+        type="email"
         class="form-control"
-        name="username"
-        id="username"
+        name="email"
+        id="email"
         required
       />
     </div>
