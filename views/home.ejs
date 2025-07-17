@@ -7,7 +7,6 @@
     Manage your schedule gently with AI assistance and seamless calendar integration.
   </p>
 
-  <!-- AI Chat + Google Calendar Section -->
   <section id="ai-chat-calendar" class="mb-5">
     <h2 class="fw-bold mb-3">Your AI Scheduling Assistant</h2>
     <p>
@@ -15,17 +14,23 @@
     </p>
 
     <div id="calendar-container" class="mb-4">
-      <!-- Placeholder: Render Google Calendar events here -->
+      <!-- Placeholder for Google Calendar events -->
       <p>Loading your calendar...</p>
     </div>
 
     <div id="chat-container" class="mb-4">
-      <!-- Placeholder: AI chat UI -->
-      <textarea id="chat-input" class="form-control mb-2" rows="3" placeholder="Ask your AI assistant..."></textarea>
+      <textarea
+        id="chat-input"
+        class="form-control mb-2"
+        rows="3"
+        placeholder="Ask your AI assistant..."
+      ></textarea>
       <button id="send-chat" class="btn btn-primary">Send</button>
     </div>
 
-    <div id="ai-response" class="mb-3"></div>
+    <div id="ai-response" class="mb-3 border rounded p-3" style="min-height: 100px;">
+      <!-- AI responses will appear here -->
+    </div>
 
     <button id="confirm-changes" class="btn btn-success" disabled>
       👍 Confirm Changes and Update Google Calendar
@@ -35,4 +40,34 @@
 
 <%- include('partials/footer') %>
 
-<script src="/js/home.js"></script>
+<script>
+  const sendChatBtn = document.getElementById('send-chat');
+  const chatInput = document.getElementById('chat-input');
+  const aiResponseDiv = document.getElementById('ai-response');
+
+  sendChatBtn.addEventListener('click', async () => {
+    const userMessage = chatInput.value.trim();
+    if (!userMessage) return;
+
+    aiResponseDiv.innerHTML = '<em>Thinking...</em>';
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      const data = await response.json();
+
+      if (data && data.reply) {
+        aiResponseDiv.textContent = data.reply;
+      } else {
+        aiResponseDiv.textContent = 'Sorry, no response from AI.';
+      }
+    } catch (err) {
+      aiResponseDiv.textContent = 'Error contacting AI service.';
+      console.error(err);
+    }
+  });
+</script>

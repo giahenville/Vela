@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
@@ -79,7 +81,7 @@ app.get('/ai-checkup', requireLogin, (req, res) => {
 
 // Login handler
 app.post('/login', (req, res) => {
-  // Normally you would check credentials.
+  // TODO: Validate credentials here before setting session
   req.session.loggedIn = true;
   res.redirect('/home');
 });
