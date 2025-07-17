@@ -1,16 +1,18 @@
-<%- include('partials/head', { title: 'Home | Vela' }) %>
-<%- include('partials/navbar', { isLoggedIn: true }) %>
+<%- include('partials/head', { title: 'Home | Vela' }) %> <%-
+include('partials/navbar', { isLoggedIn: true }) %>
 
 <section class="container py-5">
   <h1 class="display-4 fw-bold mb-4 text-center">Welcome to Your Dashboard</h1>
   <p class="lead text-center mb-5">
-    Manage your schedule gently with AI assistance and seamless calendar integration.
+    Manage your schedule gently with AI assistance and seamless calendar
+    integration.
   </p>
 
   <section id="ai-chat-calendar" class="mb-5">
     <h2 class="fw-bold mb-3">Your AI Scheduling Assistant</h2>
     <p>
-      Your Google Calendar is imported below. Chat with the AI to make edits locally, then confirm to update your calendar.
+      Your Google Calendar is imported below. Chat with the AI to make edits
+      locally, then confirm to update your calendar.
     </p>
 
     <div id="calendar-container" class="mb-4">
@@ -28,7 +30,11 @@
       <button id="send-chat" class="btn btn-primary">Send</button>
     </div>
 
-    <div id="ai-response" class="mb-3 border rounded p-3" style="min-height: 100px;">
+    <div
+      id="ai-response"
+      class="mb-3 border rounded p-3"
+      style="min-height: 100px"
+    >
       <!-- AI responses will appear here -->
     </div>
 
@@ -41,32 +47,32 @@
 <%- include('partials/footer') %>
 
 <script>
-  const sendChatBtn = document.getElementById('send-chat');
-  const chatInput = document.getElementById('chat-input');
-  const aiResponseDiv = document.getElementById('ai-response');
+  const sendChatBtn = document.getElementById("send-chat");
+  const chatInput = document.getElementById("chat-input");
+  const aiResponseDiv = document.getElementById("ai-response");
 
-  sendChatBtn.addEventListener('click', async () => {
+  sendChatBtn.addEventListener("click", async () => {
     const userMessage = chatInput.value.trim();
     if (!userMessage) return;
 
-    aiResponseDiv.innerHTML = '<em>Thinking...</em>';
+    aiResponseDiv.innerHTML = "<em>Thinking...</em>";
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage }),
       });
 
       const data = await response.json();
 
       if (data && data.reply) {
-        aiResponseDiv.textContent = data.reply;
+        aiResponseDiv.innerHTML = marked.parse(data.reply);
       } else {
-        aiResponseDiv.textContent = 'Sorry, no response from AI.';
+        aiResponseDiv.textContent = "Sorry, no response from AI.";
       }
     } catch (err) {
-      aiResponseDiv.textContent = 'Error contacting AI service.';
+      aiResponseDiv.textContent = "Error contacting AI service.";
       console.error(err);
     }
   });
