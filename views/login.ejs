@@ -1,18 +1,16 @@
-<%- include('partials/head') %>
-<%- include('partials/navbar') %>
+<%- include('partials/head') %> <%- include('partials/navbar') %>
 
 <div class="container py-5">
   <div class="text-center mb-4">
     <h2 class="fw-bold">Welcome Back to Vela</h2>
     <p>Log in to your gentle scheduling dashboard</p>
   </div>
-  
-  <% if (error) { %>
-    <div class="alert alert-danger mx-auto" style="max-width: 400px">
-      <%= error %>
-    </div>
-  <% } %>
 
+  <% if (error) { %>
+  <div class="alert alert-danger mx-auto" style="max-width: 400px">
+    <%= error %>
+  </div>
+  <% } %>
 
   <form
     action="/api/users/login"
@@ -48,6 +46,23 @@
       </small>
     </div>
   </form>
+
+  <!-- Google OAuth Login -->
+  <div class="text-center mt-4">
+    <p class="mb-2">or</p>
+    <a
+      href="/auth/google"
+      class="btn btn-light border d-flex align-items-center justify-content-center mx-auto"
+      style="max-width: 400px"
+    >
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google Logo"
+        style="width: 20px; margin-right: 10px"
+      />
+      <span>Continue with Google</span>
+    </a>
+  </div>
 </div>
 
 <%- include('partials/footer') %>

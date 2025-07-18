@@ -1,11 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db"); // Adjust path if needed
+const db = require("../db");
 const bcrypt = require("bcrypt");
 
 // REGISTER
 router.post("/register", async (req, res) => {
-  const { email, password, name, disorders, preferences } = req.body;
+  // Destructure onboarding and core registration fields
+  const {
+    email,
+    password,
+    name,
+    mental_health_status,
+    preferred_pacing,
+    avoid_times,
+    notes,
+  } = req.body;
+
   console.log("req.body:", req.body);
 
   if (!email || !password || !name) {
@@ -13,27 +23,36 @@ router.post("/register", async (req, res) => {
   }
 
   try {
+    // Check if user already exists
+    const existingUser = await db.query("SELECT id FROM users WHERE email = $1", [email]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
     // Hash the password securely
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Prepare the insert query
     const text = `
-  INSERT INTO users (username, email, password_hash, mental_health_conditions, ocd, panic_attacks, preferences)
-  VALUES ($1, $2, $3, $4, $5, $6, $7)
-  RETURNING id, username, email;
-`;
+      INSERT INTO users
+      (username, email, password_hash, mental_health_status, preferred_pacing, avoid_times, notes)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, username, email;
+    `;
 
     const values = [
-      name, // maps to username
+      name,
       email,
-      hashedPassword, // TODO: hash this before storing!
-      disorders || [], // map to mental_health_conditions
-      false, // or true depending if user has OCD, adjust accordingly
-      false, // or true depending if user has panic attacks, adjust accordingly
-      preferences || {},
+      hashedPassword,
+      mental_health_status || null,
+      preferred_pacing || null,
+      avoid_times || null,
+      notes || null,
     ];
 
     const result = await db.query(text, values);
 
-    // res.status(201).json({ message: "User registered", user: result.rows[0] });
+    // Redirect to login page after successful registration
     res.redirect("/login");
   } catch (err) {
     console.error("Error inserting user:", err);
@@ -48,7 +67,6 @@ router.post("/login", async (req, res) => {
   console.log("Login request:", req.body);
 
   if (!email || !password) {
-    // Redirect back with error query
     return res.redirect("/login?error=1");
   }
 

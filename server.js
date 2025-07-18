@@ -4,9 +4,6 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
-require("./src/config/passport"); // Make sure this path is correct
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,32 +11,32 @@ const PORT = process.env.PORT || 3000;
 const db = require("./src/db");
 const userRouter = require("./src/routes/user"); // Adjust path if needed
 const apiRoutes = require("./src/routes/api");
+const eventsRouter = require("./src/routes/events");
 
-// Middleware to parse JSON and URL-encoded data (MUST come before routes)
+// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from frontend folder
+// Serve static files from frontend and public folders
 app.use(express.static(path.join(__dirname, "frontend")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Session config
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, 
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })
 );
-
-// Passport setup (after session)
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Make session user available to all EJS views
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
+
+app.use("/api/events", eventsRouter);
 
 // View engine
 app.set("view engine", "ejs");
@@ -67,40 +64,30 @@ app.get("/", (req, res) => {
 
 // Login page
 app.get("/login", (req, res) => {
-  res.render("login", { error: null }); // send null by default
+  res.render("login", { error: null });
 });
 
-// Create-Account page
+// Create Account page
 app.get("/create-account", (req, res) => {
   res.render("create-account");
 });
 
-// Protected pages
+// Home page (protected)
 app.get("/home", requireLogin, (req, res) => res.render("home"));
-app.get("/progress", requireLogin, (req, res) => res.render("progress"));
-app.get("/insights", requireLogin, (req, res) => res.render("insights"));
-app.get("/wellness-tips", requireLogin, (req, res) =>
-  res.render("wellness-tips")
-);
-app.get("/ai-checkup", requireLogin, (req, res) => res.render("ai-checkup"));
-
-// ======= AUTH Handlers ======
 
 // Login handler
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     const user = result.rows[0];
 
     if (!user) {
       return res.status(400).render("login", { error: "User not found" });
     }
 
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await bcrypt.compare(password, user.password_hash); // fixed property name
 
     if (!valid) {
       return res.status(400).render("login", { error: "Invalid password" });
@@ -113,13 +100,11 @@ app.post("/login", async (req, res) => {
       username: user.username,
       email: user.email,
     };
-  
+
     res.redirect("/home");
   } catch (err) {
     console.error("Login error:", err);
-    res
-      .status(500)
-      .render("login", { error: "Something went wrong. Please try again." });
+    res.status(500).render("login", { error: "Something went wrong. Please try again." });
   }
 });
 
@@ -133,32 +118,6 @@ app.post("/logout", (req, res) => {
 // API routes
 app.use("/api/users", userRouter);
 app.use("/api", apiRoutes);
-
-
-// === Google OAuth Routes ===
-app.get(
-  "/auth/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email", "https://www.googleapis.com/auth/calendar"],
-  })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
-  (req, res) => {
-    req.session.loggedIn = true;
-    req.session.user = {
-      id: req.user.id,
-      username: req.user.displayName,
-      email: req.user.email,
-      accessToken: req.user.accessToken,
-      refreshToken: req.user.refreshToken,
-    };
-    res.redirect("/home");
-  }
-);
-
 
 // ====== DB Test ======
 (async () => {
