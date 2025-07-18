@@ -1,79 +1,84 @@
-<%- include('partials/head', { title: 'Home | Vela' }) %> <%-
-include('partials/navbar', { isLoggedIn: true }) %>
+<%- include('partials/head', { title: 'Home | Vela' }) %>
+<%- include('partials/navbar', { isLoggedIn: true }) %>
 
 <section class="container py-5">
   <h1 class="display-4 fw-bold mb-4 text-center">Welcome to Your Dashboard</h1>
-  <p class="lead text-center mb-5">
-    Manage your schedule gently with AI assistance and seamless calendar
-    integration.
-  </p>
+ 
 
-  <section id="ai-chat-calendar" class="mb-5">
-    <h2 class="fw-bold mb-3">Your AI Scheduling Assistant</h2>
-    <p>
-      Your Google Calendar is imported below. Chat with the AI to make edits
-      locally, then confirm to update your calendar.
+  <section id="ai-chat" class="mb-5 mx-auto" style="max-width: 700px;">
+    <h2 class="fw-bold mb-3 text-center">Your AI Scheduling Assistant</h2>
+    <p class="text-center">
+      Chat with your AI assistant to get scheduling help and support.
     </p>
 
-    <div id="calendar-container" class="mb-4">
-      <!-- Placeholder for Google Calendar events -->
-      <p>Loading your calendar...</p>
-    </div>
-
+    <!-- AI Chat -->
     <div id="chat-container" class="mb-4">
+      <div
+        id="chat"
+        style="border: 1px solid #ccc; padding: 1rem; height: 300px; overflow-y: auto; margin-bottom: 1rem; background: #f8f9fa; border-radius: 6px;"
+      >
+        <p><em>Chat messages will appear here...</em></p>
+      </div>
+
       <textarea
         id="chat-input"
-        class="form-control mb-2"
-        rows="3"
+        class="form-control mb-3"
+        rows="4"
         placeholder="Ask your AI assistant..."
+        style="resize: vertical;"
       ></textarea>
-      <button id="send-chat" class="btn btn-primary">Send</button>
+      <button id="send-chat" class="btn btn-primary w-100">Send</button>
     </div>
-
-    <div
-      id="ai-response"
-      class="mb-3 border rounded p-3"
-      style="min-height: 100px"
-    >
-      <!-- AI responses will appear here -->
-    </div>
-
-    <button id="confirm-changes" class="btn btn-success" disabled>
-      👍 Confirm Changes and Update Google Calendar
-    </button>
   </section>
 </section>
 
 <%- include('partials/footer') %>
 
 <script>
-  const sendChatBtn = document.getElementById("send-chat");
-  const chatInput = document.getElementById("chat-input");
-  const aiResponseDiv = document.getElementById("ai-response");
+  document.addEventListener("DOMContentLoaded", () => {
+    const chatDiv = document.getElementById("chat");
+    const chatInput = document.getElementById("chat-input");
+    const sendChatBtn = document.getElementById("send-chat");
 
-  sendChatBtn.addEventListener("click", async () => {
-    const userMessage = chatInput.value.trim();
-    if (!userMessage) return;
+    sendChatBtn.addEventListener("click", () => {
+      const message = chatInput.value.trim();
+      if (!message) return;
 
-    aiResponseDiv.innerHTML = "<em>Thinking...</em>";
+      sendMessage(message);
+      chatInput.value = "";
+    });
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
-      });
+    async function sendMessage(message) {
+      addChatMessage(`You: ${message}`);
 
-      const data = await response.json();
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
 
-      if (data && data.reply) {
-        aiResponseDiv.innerHTML = marked.parse(data.reply);
-      } else {
-        aiResponseDiv.textContent = "Sorry, no response from AI.";
+        const data = await response.json();
+
+        if (data && data.reply) {
+          addChatMessage(`AI: ${data.reply}`);
+        } else {
+          addChatMessage("AI: Sorry, no response from AI.");
+        }
+      } catch (err) {
+        addChatMessage("AI: Error contacting AI service.");
+        console.error(err);
       }
-    } catch (err) {
-      aiResponseDiv.textContent = "Error contacting AI service.";
-      console.error(err);
+    }
+
+    function addChatMessage(text) {
+      const placeholder = chatDiv.querySelector("em");
+      if (placeholder) chatDiv.innerHTML = "";
+
+      const p = document.createElement("p");
+      p.textContent = text;
+      chatDiv.appendChild(p);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
     }
   });
 </script>

@@ -11,13 +11,17 @@
   "author": "Gia",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.7",
     "dotenv": "^17.2.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "express-session": "^1.18.1",
+    "express-session": "^1.18.2",
+    "googleapis": "^153.0.0",
     "nodemon": "^3.1.10",
     "openai": "^5.10.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "pg": "^8.16.3"
   }
 }

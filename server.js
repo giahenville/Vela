@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,28 +11,36 @@ const PORT = process.env.PORT || 3000;
 const db = require("./src/db");
 const userRouter = require("./src/routes/user"); // Adjust path if needed
 const apiRoutes = require("./src/routes/api");
+const eventsRouter = require("./src/routes/events");
 
-// Middleware to parse JSON and URL-encoded data (MUST come before routes)
+// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// For debugging incoming request bodies
-app.use((req, res, next) => {
-  console.log("Incoming request body:", req.body);
-  next();
-});
-
-// Serve static files from frontend folder
+// Serve static files from frontend and public folders
 app.use(express.static(path.join(__dirname, "frontend")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Session config
 app.use(
   session({
-    secret: "your-secret-key", // replace this with a strong secret in prod
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })
 );
+
+// Make session user available to all EJS views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
+app.use("/api/events", eventsRouter);
+
+// View engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // Middleware to protect routes
 function requireLogin(req, res, next) {
@@ -41,10 +50,6 @@ function requireLogin(req, res, next) {
     res.redirect("/login?redirected=true");
   }
 }
-
-// ==== View engine setup ====
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
 
 // ==== ROUTES ====
 
@@ -59,7 +64,7 @@ app.get("/", (req, res) => {
 
 // Login page
 app.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", { error: null });
 });
 
 // Create Account page
@@ -67,25 +72,43 @@ app.get("/create-account", (req, res) => {
   res.render("create-account");
 });
 
-// Home (dashboard)
-app.get("/home", requireLogin, (req, res) => {
-  res.render("home");
-});
-
-// Other protected views
-app.get("/progress", requireLogin, (req, res) => res.render("progress"));
-app.get("/insights", requireLogin, (req, res) => res.render("insights"));
-app.get("/wellness-tips", requireLogin, (req, res) => res.render("wellness-tips"));
-app.get("/ai-checkup", requireLogin, (req, res) => res.render("ai-checkup"));
+// Home page (protected)
+app.get("/home", requireLogin, (req, res) => res.render("home"));
 
 // Login handler
-app.post("/login", (req, res) => {
-  // TODO: Add real credential validation
-  req.session.loggedIn = true;
-  res.redirect("/home");
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(400).render("login", { error: "User not found" });
+    }
+
+    const valid = await bcrypt.compare(password, user.password_hash); // fixed property name
+
+    if (!valid) {
+      return res.status(400).render("login", { error: "Invalid password" });
+    }
+
+    // Success: store user in session
+    req.session.loggedIn = true;
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    res.redirect("/home");
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).render("login", { error: "Something went wrong. Please try again." });
+  }
 });
 
-// Logout handler
+// Logout route
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
@@ -96,7 +119,7 @@ app.post("/logout", (req, res) => {
 app.use("/api/users", userRouter);
 app.use("/api", apiRoutes);
 
-// Connect to DB and test query once on startup
+// ====== DB Test ======
 (async () => {
   try {
     const res = await db.query("SELECT NOW()");
@@ -106,7 +129,7 @@ app.use("/api", apiRoutes);
   }
 })();
 
-// Start server
+// ====== Start server =====
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

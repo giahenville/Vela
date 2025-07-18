@@ -7,18 +7,18 @@
     <p>Start scheduling with kindness and clarity</p>
   </div>
   <form
-    action="/register"
+    action="/api/users/register"
     method="POST"
     class="mx-auto bg-light p-4 rounded shadow-sm"
     style="max-width: 400px"
   >
     <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
+      <label for="name" class="form-label">Username</label>
       <input
         type="text"
         class="form-control"
-        name="username"
-        id="username"
+        name="name"
+        id="name"
         required
       />
     </div>
@@ -42,6 +42,39 @@
         required
       />
     </div>
+
+    <!-- Onboarding fields start -->
+    <hr />
+    <h5 class="mt-4">Help us personalize your experience</h5>
+
+    <div class="mb-3">
+      <label for="mental_health_status" class="form-label">Current Mental Health Status</label>
+      <select class="form-select" name="mental_health_status" id="mental_health_status" required>
+        <option value="">Select...</option>
+        <option value="stable">Stable</option>
+        <option value="anxious">Anxious</option>
+        <option value="ocd">OCD Tendencies</option>
+        <option value="depressed">Depressed</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="preferred_pacing" class="form-label">Preferred Pacing (how should your day be scheduled?)</label>
+      <input type="text" class="form-control" name="preferred_pacing" id="preferred_pacing" placeholder="E.g., Slow mornings, frequent breaks" />
+    </div>
+
+    <div class="mb-3">
+      <label for="avoid_times" class="form-label">Times to Avoid Scheduling</label>
+      <input type="text" class="form-control" name="avoid_times" id="avoid_times" placeholder="E.g., Afternoons, 3-4pm" />
+    </div>
+
+    <div class="mb-3">
+      <label for="notes" class="form-label">Additional Notes for Your Assistant</label>
+      <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Anything else we should know?"></textarea>
+    </div>
+    <!-- Onboarding fields end -->
+
     <button type="submit" class="btn btn-primary w-100">Create Account</button>
     <div class="text-center mt-3">
       <small>
