@@ -6,6 +6,14 @@
     <h2 class="fw-bold">Welcome Back to Vela</h2>
     <p>Log in to your gentle scheduling dashboard</p>
   </div>
+  
+  <% if (error) { %>
+    <div class="alert alert-danger mx-auto" style="max-width: 400px">
+      <%= error %>
+    </div>
+  <% } %>
+
+
   <form
     action="/api/users/login"
     method="POST"

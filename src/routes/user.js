@@ -48,7 +48,8 @@ router.post("/login", async (req, res) => {
   console.log("Login request:", req.body);
 
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password required" });
+    // Redirect back with error query
+    return res.redirect("/login?error=1");
   }
 
   try {
@@ -60,7 +61,7 @@ router.post("/login", async (req, res) => {
     const userResult = await db.query(userQuery, [email]);
 
     if (userResult.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.redirect("/login?error=1");
     }
 
     const user = userResult.rows[0];
@@ -68,22 +69,29 @@ router.post("/login", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.redirect("/login?error=1");
     }
 
-    // Success!
-    res.json({
-      message: "Login successful",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
-    });
+    // Success! Set session and redirect to home
+    req.session.loggedIn = true;
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    res.redirect("/home");
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: "Server error during login" });
+    res.redirect("/login?error=1");
   }
+});
+
+// LOGOUT
+router.post("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
 });
 
 module.exports = router;

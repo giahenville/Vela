@@ -15,13 +15,22 @@
       <li class="nav-item"><a class="nav-link" href="/insights">Insights</a></li>
       <li class="nav-item"><a class="nav-link" href="/wellness-tips">Wellness Tips</a></li>
       <li class="nav-item"><a class="nav-link" href="/ai-checkup">AI Checkup</a></li>
-      <ul class="navbar-nav ms-3">
-        <li class="nav-item"><a class="btn btn-outline-primary me-2" href="/login">Log In</a></li>
-        <li class="nav-item"><a class="btn btn-primary" href="/create-account">Create Account</a></li>
+    </ul>
+
+    <ul class="navbar-nav ms-3">
+      <% if (user) { %>
         <li class="nav-item">
-          <button class="btn btn-sm btn-outline-secondary ms-2" id="modeToggle">Toggle Theme</button>
+          <form action="/logout" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger me-2">Logout</button>
+          </form>
         </li>
-      </ul>
+      <% } else { %>
+        <li class="nav-item"><a class="btn btn-outline-primary me-2" href="/login">Log In</a></li>
+        <li class="nav-item"><a class="btn btn-primary me-2" href="/create-account">Create Account</a></li>
+      <% } %>
+      <li class="nav-item">
+        <button class="btn btn-sm btn-outline-secondary ms-2" id="modeToggle">Toggle Theme</button>
+      </li>
     </ul>
   </div>
 </nav>
